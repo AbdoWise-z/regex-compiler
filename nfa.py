@@ -295,6 +295,8 @@ class NFA:
 
         # Set graph to display horizontally
         dot.attr(rankdir='LR')
+        # dot.attr(ratio="1")
+        # dot.attr(size="10,10", dpi="300")
 
         # Add all states
         for state in self.states:
