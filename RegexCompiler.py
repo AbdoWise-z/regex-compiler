@@ -149,16 +149,19 @@ class RegularCompiler:
         return node
 
     def _parseAny(self):
+        # same as in _parseChar, I wanted a special function so that I can set
+        # node.value = None (or rather, not set it), so that I can be able to
+        # identify normal "." char from a "wildcard"
         self._eat('.')
         node = ExprNode()
         node.type = NodeType.Any
         return node
 
     def _parseSet(self):
+        # a set node is just a group node, but we add elements vertically instead of
+        # adding them horizontally, also, it can only contain to subtypes: char and range
         curr_node = ExprNode()
         curr_node.type = NodeType.CharacterSet
-        curr_node.children.append([])
-        curr_or = 0
         next_escape = False
         while not self._done():
             if self._peak() is None:
@@ -173,23 +176,23 @@ class RegularCompiler:
                 next_escape = False
                 node = self._parse(NodeType.Range)
                 if node is not None:
-                    curr_node.children[curr_or].append(node)
+                    curr_node.children.append([node])
                 else:
                     node = self._parse(NodeType.Char)
                     if node is None:
                         raise Exception(f'Unexpected "{self._peak()}" at position {self._position}')
-                    curr_node.children[curr_or].append(node)
+                    curr_node.children.append([node])
             else:
                 if self._peak() == ']':
                     break
                 node = self._parse(NodeType.Range)
                 if node is not None:
-                    curr_node.children[curr_or].append(node)
+                    curr_node.children.append([node])
                 else:
                     node = self._parse(NodeType.Char)
                     if node is None:
                         raise Exception(f'Unexpected "{self._peak()}" at position {self._position}')
-                    curr_node.children[curr_or].append(node)
+                    curr_node.children.append([node])
         return curr_node
 
     def _parseRange(self):

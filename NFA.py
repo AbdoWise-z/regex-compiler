@@ -66,7 +66,12 @@ class NFA:
         start = self.create_state()
         end = self.create_state(is_final=True)
 
-        start.add_transition(node.value, end)
+        # to be able to distinguish between a '.' and a '\.'
+        if node.value == '.':
+            # "\\\\" instead of "\\" because the graphics library also tries to escape chars
+            start.add_transition('\\\\.', end)
+        else:
+            start.add_transition(node.value, end)
 
         self.start_state = start
         self.final_state = end
@@ -98,23 +103,30 @@ class NFA:
         self.final_state = end
 
     def _build_basic_node_set(self, node):
-        start = self.create_state()
-        end = self.create_state(is_final=True)
-
-        # Process all children in the character set
-        for alternative in node.children:
-            for child in alternative:
-                if child.type == NodeType.Char:
-                    start.add_transition(child.value, end)
-                elif child.type == NodeType.Range:
-                    range_start = child.params['start']
-                    range_end = child.params['end']
-                    # for char_code in range(range_start, range_end + 1):
-                    #     start.add_transition(chr(char_code), end)
-                    start.add_transition(f"{chr(range_start)} -> {chr(range_end)}", end)
-
-        self.start_state = start
-        self.final_state = end
+        # start = self.create_state()
+        # end = self.create_state(is_final=True)
+        #
+        # # Process all children in the character set
+        # # Not sure how to handle ranges here, so just adding a transition for the range itself
+        # # also, I'm not sure how to connect elements of character set, so I'll assume they OR-gated instead of
+        # # creating NFA for each then connecting them with epsilon transitions
+        # for alternative in node.children:
+        #     for child in alternative:
+        #         if child.type == NodeType.Char:
+        #             start.add_transition(child.value, end)
+        #         elif child.type == NodeType.Range:
+        #             range_start = child.params['start']
+        #             range_end = child.params['end']
+        #             # for char_code in range(range_start, range_end + 1):
+        #             #     start.add_transition(chr(char_code), end)
+        #             start.add_transition(f"{chr(range_start)} -> {chr(range_end)}", end)
+        #
+        # self.start_state = start
+        # self.final_state = end
+        # # the code above isn't wrong, but it will make the output not identical to the one
+        # # in the lecture (will be more optimized heh, which certain "some people" won't like)
+        # # so let's just embrace recursion and call it a day :)
+        self._build_alternation(node.children)
 
     def _build_basic_node_group(self, node):
         if not node.children or not node.children[0]:
@@ -295,6 +307,7 @@ class NFA:
 
         # Set graph to display horizontally
         dot.attr(rankdir='LR')
+        # dot.attr(dpi="300")
         # dot.attr(ratio="1")
         # dot.attr(size="10,10", dpi="300")
 
@@ -318,11 +331,15 @@ class NFA:
             # Add normal transitions
             for char, targets in state.transitions.items():
                 for target in targets:
-                    dot.edge(src_id, f"q{target.id}", label=char)
+                    dot.edge(src_id,
+                             f"q{target.id}",
+                             label=char,
+                             color='green',
+                    )
 
             # Add epsilon transitions
             for target in state.epsilon_transitions:
-                dot.edge(src_id, f"q{target.id}", label='ε')
+                dot.edge(src_id, f"q{target.id}", label='ε', color='saddlebrown', fontcolor='saddlebrown')
 
         # Add the regex string at the bottom if provided
         if regex_str:
@@ -354,7 +371,12 @@ class NFA:
                 for transition_char , targets in state.transitions.items():
                     # Handle '.' as wildcard and ranges, this is probably the ugliest way to do it, but it works :)
                     split = str(transition_char).split(" -> ")
-                    if transition_char == '.' or transition_char == char or (len(split) == 2 and ord(split[0]) <= ord(char) <= ord(split[1])):
+                    if (
+                        transition_char == '.' or
+                        transition_char == char or
+                        (char == '.' and transition_char == '\\\\.') or
+                        (len(split) == 2 and ord(split[0]) <= ord(char) <= ord(split[1]))
+                    ):
                         next_states.update(targets)
 
             # Find epsilon closures for all next states
@@ -422,13 +444,13 @@ class NFA:
         return filename
 
 
-def regex_to_nfa(regex_str):
+def regex_to_nfa(regex_str: str):
     """Convert a regular expression string to an NFA"""
     regex = RegularCompiler(regex_str)
     return NFA(regex.ast)
 
 
-def match(regex_str, test_str):
+def match(regex_str: str, test_str: str):
     """Test if a string matches a regular expression"""
     nfa = regex_to_nfa(regex_str)
     return nfa.match(test_str)
@@ -436,8 +458,8 @@ def match(regex_str, test_str):
 
 if __name__ == "__main__":
     # Example usage
-    regex_str = "((((a*b)*c)*d)*)f*"
-    test_str = "abcd"
+    regex_str = "[ab.].+"
+    test_str = ".com"
 
     nfa = regex_to_nfa(regex_str)
     result = nfa.match(test_str)
@@ -448,8 +470,8 @@ if __name__ == "__main__":
 
     # Visualize the NFA
     try:
-        dot = nfa.render_to_file('nfa_visualization', regex_str=regex_str)
+        dot = nfa.render_to_file('nfa_visualization', regex_str=regex_str, format='svg')
         nfa.save_json()
-        print("NFA visualization saved as 'nfa_visualization.png'")
+        print("NFA visualization saved as 'nfa_visualization.svg'")
     except Exception as e:
         print(f"Could not create visualization: {e}")
