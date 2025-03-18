@@ -315,7 +315,9 @@ class NFA:
         for state in self.states:
             node_id = f"q{state.id}"
             if state.is_final:
-                dot.node(node_id, f"q{state.id}", shape='doublecircle')
+                dot.node(node_id, f"q{state.id}", shape='doublecircle', style='filled', fillcolor='lightgray')
+            elif state == self.start_state:
+                dot.node(node_id, f"q{state.id}", shape='circle', style='filled', fillcolor='lightblue')
             else:
                 dot.node(node_id, f"q{state.id}", shape='circle')
 
