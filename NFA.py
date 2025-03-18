@@ -458,8 +458,8 @@ def match(regex_str: str, test_str: str):
 
 if __name__ == "__main__":
     # Example usage
-    regex_str = "[ab.].+"
-    test_str = ".com"
+    regex_str = "(((((a)*b)*)c)*d)*"
+    test_str = "abcd"
 
     nfa = regex_to_nfa(regex_str)
     result = nfa.match(test_str)
