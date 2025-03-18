@@ -313,35 +313,35 @@ class NFA:
 
         # Add all states
         for state in self.states:
-            node_id = f"q{state.id}"
+            node_id = f"S{state.id}"
             if state.is_final:
-                dot.node(node_id, f"q{state.id}", shape='doublecircle', style='filled', fillcolor='lightgray')
+                dot.node(node_id, f"S{state.id}", shape='doublecircle', style='filled', fillcolor='lightgray')
             elif state == self.start_state:
-                dot.node(node_id, f"q{state.id}", shape='circle', style='filled', fillcolor='lightblue')
+                dot.node(node_id, f"S{state.id}", shape='circle', style='filled', fillcolor='lightblue')
             else:
-                dot.node(node_id, f"q{state.id}", shape='circle')
+                dot.node(node_id, f"S{state.id}", shape='circle')
 
         # Add start indicator
         if self.start_state:
             dot.node('start', '', shape='point')
-            dot.edge('start', f"q{self.start_state.id}")
+            dot.edge('start', f"S{self.start_state.id}")
 
         # Add all transitions
         for state in self.states:
-            src_id = f"q{state.id}"
+            src_id = f"S{state.id}"
 
             # Add normal transitions
             for char, targets in state.transitions.items():
                 for target in targets:
                     dot.edge(src_id,
-                             f"q{target.id}",
+                             f"S{target.id}",
                              label=char,
                              color='green',
                     )
 
             # Add epsilon transitions
             for target in state.epsilon_transitions:
-                dot.edge(src_id, f"q{target.id}", label='ε', color='saddlebrown', fontcolor='saddlebrown')
+                dot.edge(src_id, f"S{target.id}", label='ε', color='saddlebrown', fontcolor='saddlebrown')
 
         # Add the regex string at the bottom if provided
         if regex_str:
