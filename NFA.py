@@ -436,7 +436,7 @@ def match(regex_str, test_str):
 
 if __name__ == "__main__":
     # Example usage
-    regex_str = "(((((a)*b)*c)*d)*)f*"
+    regex_str = "((((a*b)*c)*d)*)f*"
     test_str = "abcd"
 
     nfa = regex_to_nfa(regex_str)
