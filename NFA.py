@@ -422,12 +422,15 @@ class NFA:
 
             # Add regular transitions
             for char, targets in state.transitions.items():
-                # For simplicity, we'll just use the first target if there are multiple
-                if targets:
+                if len(targets) == 1:
                     target = next(iter(targets))
                     state_data[char] = f"S{target.id}"
+                else:
+                    state_data[char] = []
+                    for target in targets:
+                        state_data[char].append(f"S{target.id}")
 
-            # Add epsilon transitions
+                        # Add epsilon transitions
             for target in state.epsilon_transitions:
                 # Use 'ε' as the key for epsilon transitions
                 if 'ε' not in state_data:
