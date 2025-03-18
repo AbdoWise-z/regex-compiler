@@ -127,8 +127,8 @@
   "S21": {
     "isTerminatingState": false,
     "\u03b5": [
-      "S20",
-      "S25"
+      "S25",
+      "S20"
     ]
   },
   "S22": {
@@ -144,8 +144,8 @@
   "S24": {
     "isTerminatingState": false,
     "\u03b5": [
-      "S20",
-      "S25"
+      "S25",
+      "S20"
     ]
   },
   "S25": {
