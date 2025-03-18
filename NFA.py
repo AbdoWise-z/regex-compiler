@@ -1,4 +1,4 @@
-from RegexExpression import RegularExpression, ExprNode, NodeType
+from RegexCompiler import RegularCompiler, ExprNode, NodeType
 import graphviz
 
 
@@ -424,7 +424,7 @@ class NFA:
 
 def regex_to_nfa(regex_str):
     """Convert a regular expression string to an NFA"""
-    regex = RegularExpression(regex_str)
+    regex = RegularCompiler(regex_str)
     return NFA(regex.ast)
 
 

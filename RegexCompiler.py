@@ -33,7 +33,7 @@ PARAM_RANGE_END   = 'end'
 QUANTIFIES = ['?', '+', '*']
 SPECIAL_CHARS = ['(', ')', '[', '|', '?', '+' , '*']
 
-class RegularExpression:
+class RegularCompiler:
     ast: ExprNode
     expr_str: str
     _position: int
@@ -214,5 +214,5 @@ class RegularExpression:
 
 if __name__ == "__main__":
     test = "a|b|c|d"
-    re = RegularExpression(test)
+    re = RegularCompiler(test)
     print("ok")
