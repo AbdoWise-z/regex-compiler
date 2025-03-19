@@ -1,4 +1,4 @@
-from RegexCompiler import RegularCompiler, ExprNode, NodeType
+from RegexCompiler import RegexCompiler, ExprNode, NodeType
 import graphviz
 
 
@@ -97,7 +97,7 @@ class NFA:
         # for char_code in range(range_start, range_end + 1):
         #     start.add_transition(chr(char_code), end)
 
-        start.add_transition(f"{chr(range_start)} -> {chr(range_end)}", end)
+        start.add_transition(f"{chr(range_start)} - {chr(range_end)}", end)
 
         self.start_state = start
         self.final_state = end
@@ -345,7 +345,13 @@ class NFA:
 
         # Add the regex string at the bottom if provided
         if regex_str:
-            dot.attr(label=f"Regular Expression: {regex_str}")
+            escp = ""
+            for char in regex_str:
+                if char == '\\':
+                    escp = escp + char * 2
+                else:
+                    escp = escp + char
+            dot.attr(label=f"Regular Expression: {escp}")
             dot.attr(labelloc='b')  # Place label at bottom
 
         return dot
@@ -372,7 +378,7 @@ class NFA:
             for state in current_states:
                 for transition_char , targets in state.transitions.items():
                     # Handle '.' as wildcard and ranges, this is probably the ugliest way to do it, but it works :)
-                    split = str(transition_char).split(" -> ")
+                    split = str(transition_char).split(" - ")
                     if (
                         transition_char == '.' or
                         transition_char == char or
@@ -451,7 +457,7 @@ class NFA:
 
 def regex_to_nfa(regex_str: str):
     """Convert a regular expression string to an NFA"""
-    regex = RegularCompiler(regex_str)
+    regex = RegexCompiler(regex_str)
     return NFA(regex.ast)
 
 

@@ -33,7 +33,7 @@ PARAM_RANGE_END   = 'end'
 QUANTIFIES = ['?', '+', '*']
 SPECIAL_CHARS = ['(', ')', '[', '|', '?', '+' , '*']
 
-class RegularCompiler:
+class RegexCompiler:
     ast: ExprNode
     expr_str: str
     _position: int
@@ -198,14 +198,24 @@ class RegularCompiler:
     def _parseRange(self):
         curr_node = ExprNode()
         curr_node.type = NodeType.Range
-        if self._peak(1) == '-' and self._peak(2) is not None:
+        if (
+            self._peak(1) == '-'                 # "-" is the letter after next
+            and self._peak(2) is not None        # there are at least 3 letters
+            and self._peak(2) is not ']'         # the second character is not the end of character set
+        ):
             start = self._peak(0)
             end = self._peak(2)
+            if end == '\\': # special case the second character is escaped
+                end = self._peak(3)
+                if end is None:
+                    return None
+                self._eat(None) # extra eat :)
+
             self._eat(None); self._eat(None); self._eat(None)
             start = ord(start)
             end = ord(end)
             if start > end:
-                raise Exception(f'Expected start > end at position {self._position}')
+                raise Exception(f'Expected start <= end at position {self._position}')
             curr_node.params[PARAM_RANGE_START] = start
             curr_node.params[PARAM_RANGE_END] = end
         else:
@@ -217,5 +227,5 @@ class RegularCompiler:
 
 if __name__ == "__main__":
     test = "a|b|c|d"
-    re = RegularCompiler(test)
+    re = RegexCompiler(test)
     print("ok")
