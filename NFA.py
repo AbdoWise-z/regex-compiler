@@ -469,7 +469,7 @@ def match(regex_str: str, test_str: str):
 
 if __name__ == "__main__":
     # Example usage
-    regex_str = "(((((a)*b)*)c)*d)*[a-z][b-d]*[g-h]*"
+    regex_str = "[bc]*(cd)+"
     test_str = "abcdych"
 
     nfa = regex_to_nfa(regex_str)

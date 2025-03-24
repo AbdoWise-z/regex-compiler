@@ -1,0 +1,22 @@
+{
+  "startingState": "S1 S4 S7 S2 S12 S0 S8 S6 S3",
+  "S1 S4 S7 S2 S12 S0 S8 S6 S3": {
+    "isTerminatingState": false,
+    "b": "S1 S4 S7 S2 S12 S0 S8 S6 S3",
+    "c": "S5 S1 S4 S7 S2 S9 S12 S0 S8 S10"
+  },
+  "S5 S1 S4 S7 S2 S9 S12 S0 S8 S10": {
+    "isTerminatingState": false,
+    "b": "S1 S4 S7 S2 S12 S0 S8 S6 S3",
+    "c": "S5 S1 S4 S7 S2 S9 S12 S0 S8 S10",
+    "d": "S11 S8 S13"
+  },
+  "S11 S8 S13": {
+    "isTerminatingState": true,
+    "c": "S9 S10"
+  },
+  "S9 S10": {
+    "isTerminatingState": false,
+    "d": "S11 S8 S13"
+  }
+}
