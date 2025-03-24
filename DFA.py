@@ -228,7 +228,7 @@ class DFA:
 
         return state_to_group, group_to_state
 
-    def __group_to_state(self, group : set[DFA_State]):
+    def __group_to_state(self, group : set[DFA_State], group_id : int = None):
         """Convert a group (set of DFA states) to a single DFA state 
             by just concatenating the ids of all NFA states in every DFA state in the group
         """
@@ -244,14 +244,21 @@ class DFA:
 
             all_nfa_states |= dfa_state.states
 
-        new_dfa_state = DFA_State(all_nfa_states, is_final)
+        new_dfa_state = None
+        if group_id != None:
+            s = State("S" + str(group_id))
+            st = set()
+            st.add(s)
+            new_dfa_state = DFA_State(st, is_final)
+        else: 
+            new_dfa_state = DFA_State(all_nfa_states, is_final)
 
         if is_start:
             self.start_state = new_dfa_state
 
         return new_dfa_state      
 
-    def __update_transitions(self, state_to_group : dict[DFA_State, int], group_to_state : dict[int, set[DFA_State]], transition_table : dict[DFA_State, dict[str, DFA_State]]):
+    def __update_transitions(self, state_to_group : dict[DFA_State, int], group_to_state : dict[int, set[DFA_State]]):
         # Clear the DFA to create the new 'minimizaed' states
         self.states = set()
         # List of new transitions between new 'minimized' states
@@ -262,12 +269,12 @@ class DFA:
             # Get source state group and convert it to a DFA state
             src_group = state_to_group[src_state]
             src = group_to_state[src_group]
-            src = self.__group_to_state(src)
+            src = self.__group_to_state(src, src_group)
 
             # Get target state group and convert it to a DFA state
             target_group = state_to_group[target_state]
             target = group_to_state[target_group]
-            target = self.__group_to_state(target)
+            target = self.__group_to_state(target, target_group)
 
             # Add new states to the DFA
             self.states.add(src)
@@ -309,7 +316,7 @@ class DFA:
     def __minimize_DFA(self):
         transition_table = self.__create_transition_table()
         state_to_group, group_to_state = self.__split_states(transition_table)
-        self.__update_transitions(state_to_group, group_to_state, transition_table)
+        self.__update_transitions(state_to_group, group_to_state)
         self.__min_to_json("min_DFA.json")
             
     def __to_dot(self, regex_str = None):
