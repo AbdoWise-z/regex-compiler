@@ -311,6 +311,11 @@ class NFA:
         # dot.attr(ratio="1")
         # dot.attr(size="10,10", dpi="300")
 
+        # Add start indicator
+        if self.start_state:
+            dot.node('start', '', shape='point')
+            dot.edge('start', f"S{self.start_state.id}")
+
         # Add all states
         for state in self.states:
             node_id = f"S{state.id}"
@@ -321,10 +326,6 @@ class NFA:
             else:
                 dot.node(node_id, f"S{state.id}", shape='circle')
 
-        # Add start indicator
-        if self.start_state:
-            dot.node('start', '', shape='point')
-            dot.edge('start', f"S{self.start_state.id}")
 
         # Add all transitions
         for state in self.states:
