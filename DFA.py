@@ -180,8 +180,8 @@ class DFA:
                 group_to_state[0].add(state)
 
         num_of_groups = 2 # current number of groups
-        non_accepting_group = group_to_state[0].copy()
-        accepting_group = group_to_state[1].copy()
+        non_accepting_group = group_to_state[0]
+        accepting_group = group_to_state[1]
         # Stack to process every existing group
         stack : list[set[DFA_State]] = [non_accepting_group, accepting_group]
         # Split groups until no change
