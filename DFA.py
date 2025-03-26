@@ -204,7 +204,7 @@ class DFA:
                     # if current action transits both the representative and the current state to 'None' state, then no split required
                     if (curr_target == None or target_state == None) and target_state == curr_target:
                         continue
-                    # states goes to different groups, Split them to a new group and update group/state maps
+                    # states goes to different groups, we need to split them
                     if target_state == None or state_to_group[target_state] != target_group:
                         # Add this state to a new group
                         new_states.add(state)
@@ -227,7 +227,8 @@ class DFA:
                 # Add both the modified curr group and the new group
                 stack.append(curr_states)
                 stack.append(new_states)
-                num_of_groups += 1 # we have one more group
+                # Increment number of groups as we created one more group
+                num_of_groups += 1
 
         return state_to_group, group_to_state
 
