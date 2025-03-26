@@ -470,7 +470,7 @@ def match(regex_str: str, test_str: str):
 
 if __name__ == "__main__":
     # Example usage
-    regex_str = "[bc]*(cd)+"
+    regex_str = "[aA]bdo+"
     test_str = "abcdych"
 
     nfa = regex_to_nfa(regex_str)

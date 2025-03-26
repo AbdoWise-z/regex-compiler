@@ -201,7 +201,6 @@ class DFA:
                 # For every state in the current group check if they should be splitted
                 for state in curr_states:
                     target_state = transition_table[state].get(action, None)
-                    group = state_to_group[state]
                     # if current action transits both the representative and the current state to 'None' state, then no split required
                     if (curr_target == None or target_state == None) and target_state == curr_target:
                         continue
@@ -209,19 +208,23 @@ class DFA:
                     if target_state == None or state_to_group[target_state] != target_group:
                         # Add this state to a new group
                         new_states.add(state)
-                        # Update its group id
-                        state_to_group[state] = num_of_groups
-                        # Remove it from the current group
-                        group_to_state[group].remove(state)
-                        # Add it to its new group
-                        if num_of_groups not in group_to_state:
-                            group_to_state[num_of_groups] = set()
-                        group_to_state[num_of_groups].add(state)
-
             # Remove states that should be splitted from current group
             curr_states = set([s for s in curr_states if s not in new_states])
-            # If we made a split add new group and modified curr group to the stack to process them again
+            # If we made a split create the new group and add both the modified curr group and the new group to the stack to process them again
             if len(new_states) > 0: 
+                # Create new group for splitted states
+                # For every splitted state
+                for s in new_states:
+                    # Remove it from its curr group
+                    group = state_to_group[s]
+                    group_to_state[group].remove(s)
+                    # Update its group id
+                    state_to_group[s] = num_of_groups
+                    # Add it to its new group
+                    if num_of_groups not in group_to_state:
+                        group_to_state[num_of_groups] = set()
+                    group_to_state[num_of_groups].add(s)
+                # Add both the modified curr group and the new group
                 stack.append(curr_states)
                 stack.append(new_states)
                 num_of_groups += 1 # we have one more group
