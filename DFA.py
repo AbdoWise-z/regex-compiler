@@ -372,10 +372,14 @@ class DFA:
             dot.render(filename, format=format, cleanup=True)
             return dot
 
+
+from NFA import regex_to_nfa
 if __name__ == "__main__":
     # Example usage
-    regex_str = "[bc]*(cd)+"
-
+    regex_str = "[aA]bdo+"
+    nfa = regex_to_nfa(regex_str)
+    nfa.save_json()
+    nfa.render_to_file('nfa', 'svg', regex_str)
     dfa = DFA(json_file_path= "nfa.json", minimized= False)
     min_dfa = DFA(json_file_path="nfa.json", minimized= True)
     

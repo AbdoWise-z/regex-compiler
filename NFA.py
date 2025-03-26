@@ -286,7 +286,7 @@ class NFA:
             new_start.add_epsilon_transition(new_final)
 
             # Connect original_final to original_start and new_final
-            original_final.add_epsilon_transition(original_start)
+            original_final.add_epsilon_transition(new_start)
             original_final.add_epsilon_transition(new_final)
 
         elif quantifier == '+':  # One or more occurrences
