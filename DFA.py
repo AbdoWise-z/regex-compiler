@@ -128,6 +128,10 @@ class DFA:
         self.start_state = DFA_State(self.__epsilon_closure(self.nfa.start_state))
         self.states.add(self.start_state)
 
+        # Check if the start state is also a terminating state
+        if self.nfa.final_state in self.start_state.states:
+            self.final_states.add(self.start_state)
+
         stack : list[DFA_State] = [self.start_state]
         # while there are DFA states
         while stack:
@@ -188,6 +192,9 @@ class DFA:
         while stack:
             # Process current group
             curr_states = stack.pop()
+            # non-accepting group can be empty (ex: regex= a*)
+            if len(curr_states) == 0:
+                continue
             # Get current representative of this group (first one or anyone, doesn't matter)
             curr_representative = list(curr_states)[0]
             new_states : set[DFA_State] = set() # set of states that should be splitted to another group
@@ -380,7 +387,7 @@ class DFA:
 from NFA import regex_to_nfa
 if __name__ == "__main__":
     # Example usage
-    regex_str = "[aA]bdo+"
+    regex_str = "a*"
     nfa = regex_to_nfa(regex_str)
     nfa.save_json()
     nfa.render_to_file('nfa', 'svg', regex_str)
