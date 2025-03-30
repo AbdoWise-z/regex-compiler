@@ -14,8 +14,8 @@
   "S2": {
     "isTerminatingState": false,
     "\u03b5": [
-      "S0",
-      "S3"
+      "S3",
+      "S0"
     ]
   },
   "S3": {

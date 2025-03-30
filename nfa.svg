@@ -33,7 +33,7 @@
 <text text-anchor="middle" x="144.53" y="-77.09" font-family="Times New Roman,serif" font-size="14.00">S0</text>
 </g>
 <!-- S2&#45;&gt;S0 -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>S2&#45;&gt;S0</title>
 <path fill="none" stroke="saddlebrown" d="M82.34,-82.14C91.39,-82.14 102.3,-82.14 112.37,-82.14"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="112.15,-85.64 122.15,-82.14 112.15,-78.64 112.15,-85.64"/>
@@ -47,7 +47,7 @@
 <text text-anchor="middle" x="315.1" y="-44.09" font-family="Times New Roman,serif" font-size="14.00">S3</text>
 </g>
 <!-- S2&#45;&gt;S3 -->
-<g id="edge6" class="edge">
+<g id="edge5" class="edge">
 <title>S2&#45;&gt;S3</title>
 <path fill="none" stroke="saddlebrown" d="M79.28,-71.33C91.25,-64.38 107.91,-55.96 123.89,-52.14 176.76,-39.52 240.27,-41.89 278.88,-45.19"/>
 <polygon fill="saddlebrown" stroke="saddlebrown" points="278.47,-48.67 288.76,-46.11 279.13,-41.7 278.47,-48.67"/>

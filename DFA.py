@@ -82,9 +82,8 @@ class DFA:
         with open(file_path, 'r') as file:
             data = json.load(file)
         
-        # Assign start state of NFA
-        self.nfa.start_state = State(data["startingState"], False)
-
+        start = data["startingState"]
+        
         # Creating NFA states
         for state_name, state_data in data.items():
             if state_name == "startingState":
@@ -94,6 +93,8 @@ class DFA:
             self.nfa.states.append(current_state)
             if is_final:
                 self.nfa.final_state = current_state # Assign final state of NFA
+            elif state_name == start:
+                self.nfa.start_state = current_state # Assign start state of NFA
         
         # Adding NFA transitions
         for state_name, state_data in data.items():
@@ -189,54 +190,65 @@ class DFA:
         # Stack to process every existing group
         stack : list[set[DFA_State]] = [non_accepting_group, accepting_group]
         # Split groups until no change
-        while stack:
-            # Process current group
-            curr_states = stack.pop()
-            # non-accepting group can be empty (ex: regex= a*)
-            if len(curr_states) == 0:
-                continue
-            # Get current representative of this group (first one or anyone, doesn't matter)
-            curr_representative = list(curr_states)[0]
-            new_states : set[DFA_State] = set() # set of states that should be splitted to another group
-            # For each action possible    
-            for action in self.actions:
-                # Get what group representative goes to and check if all other states are the same
-                curr_target = transition_table[curr_representative].get(action, None)
-                target_group = None
-                if curr_target:
-                    target_group = state_to_group[curr_target]
-                # For every state in the current group check if they should be splitted
-                for state in curr_states:
-                    target_state = transition_table[state].get(action, None)
-                    # if current action transits both the representative and the current state to 'None' state, then no split required
-                    if (curr_target == None or target_state == None) and target_state == curr_target:
-                        continue
-                    # states goes to different groups, we need to split them
-                    if target_state == None or state_to_group[target_state] != target_group:
-                        # Add this state to a new group
-                        new_states.add(state)
-            # Remove states that should be splitted from current group
-            curr_states = set([s for s in curr_states if s not in new_states])
-            # If we made a split create the new group and add both the modified curr group and the new group to the stack to process them again
-            if len(new_states) > 0: 
-                # Create new group for splitted states
-                # For every splitted state
-                for s in new_states:
-                    # Remove it from its curr group
-                    group = state_to_group[s]
-                    group_to_state[group].remove(s)
-                    # Update its group id
-                    state_to_group[s] = num_of_groups
-                    # Add it to its new group
-                    if num_of_groups not in group_to_state:
-                        group_to_state[num_of_groups] = set()
-                    group_to_state[num_of_groups].add(s)
-                # Add both the modified curr group and the new group
-                stack.append(curr_states)
-                stack.append(new_states)
-                # Increment number of groups as we created one more group
-                num_of_groups += 1
-
+        while True:
+            size : int = len(stack)
+            currLen : int = size
+            # Process current list of groups
+            while size:
+                size -= 1
+                # Process current group
+                curr_states = stack.pop(0)
+                # if length of curr states equal 1, then we can't split, 
+                # or length equals 0 (there is no non-accepting states),
+                # add it as it is and skip it
+                if len(curr_states) <= 1:
+                    stack.append(curr_states)
+                    continue
+                # Get current representative of this group (first one or anyone, doesn't matter)
+                curr_representative = list(curr_states)[0]
+                new_states : set[DFA_State] = set() # set of states that should be splitted to another group
+                # For each action possible    
+                for action in self.actions:
+                    # Get what group representative goes to and check if all other states are the same
+                    curr_target = transition_table[curr_representative].get(action, None)
+                    target_group = None
+                    if curr_target:
+                        target_group = state_to_group[curr_target]
+                    # For every state in the current group check if they should be splitted
+                    for state in curr_states:
+                        target_state = transition_table[state].get(action, None)
+                        # if current action transits both the representative and the current state to 'None' state, then no split required
+                        if (curr_target == None or target_state == None) and target_state == curr_target:
+                            continue
+                        # states goes to different groups, we need to split them
+                        if target_state == None or state_to_group[target_state] != target_group:
+                            # Add this state to a new group
+                            new_states.add(state)
+                # Remove states that should be splitted from current group
+                curr_states = set([s for s in curr_states if s not in new_states])
+                # If we made a split create the new group and add both the modified curr group and the new group to the stack to process them again
+                if len(new_states) > 0:
+                    # Create new group for splitted states
+                    # For every splitted state
+                    for s in new_states:
+                        # Remove it from its curr group
+                        group = state_to_group[s]
+                        group_to_state[group].remove(s)
+                        # Update its group id
+                        state_to_group[s] = num_of_groups
+                        # Add it to its new group
+                        if num_of_groups not in group_to_state:
+                            group_to_state[num_of_groups] = set()
+                        group_to_state[num_of_groups].add(s)
+                    # Add both the modified curr group and the new group
+                    stack.append(curr_states)
+                    stack.append(new_states)
+                    # Increment number of groups as we created one more group
+                    num_of_groups += 1
+                else: # If we didn't make a split add curr group again
+                    stack.append(curr_states)
+            # If no split done terminate the algorithm 
+            if currLen == len(stack): break
         return state_to_group, group_to_state
 
     def __group_to_state(self, group : set[DFA_State], group_id : int = None):
@@ -257,7 +269,7 @@ class DFA:
 
         new_dfa_state = None
         if group_id != None:
-            s = State("S" + str(group_id))
+            s = State("G" + str(group_id))
             st = set()
             st.add(s)
             new_dfa_state = DFA_State(st, is_final)
@@ -286,7 +298,7 @@ class DFA:
             target_group = state_to_group[target_state]
             target = group_to_state[target_group]
             target = self.__group_to_state(target, target_group)
-
+ 
             # Add new states to the DFA
             self.states.add(src)
             self.states.add(target)

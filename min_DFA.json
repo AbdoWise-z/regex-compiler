@@ -1,7 +1,7 @@
 {
-  "startingState": "S1",
-  "S1": {
+  "startingState": "G1",
+  "G1": {
     "isTerminatingState": true,
-    "a": "S1"
+    "a": "G1"
   }
 }
