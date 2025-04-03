@@ -1,0 +1,12 @@
+{
+  "startingState": "G2",
+  "G2": {
+    "isTerminatingState": false,
+    "a": "G0"
+  },
+  "G0": {
+    "isTerminatingState": false,
+    ".": "G0",
+    "c": "G1"
+  }
+}
