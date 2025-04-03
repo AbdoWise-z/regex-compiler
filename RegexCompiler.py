@@ -222,9 +222,6 @@ class RegexCompiler:
             return None
         return curr_node
 
-
-
-
 if __name__ == "__main__":
     test = "a|b|c|d"
     re = RegexCompiler(test)
